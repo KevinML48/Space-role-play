@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SalonController;
+use App\Http\Controllers\MessageController;
 
 // Route publique
 Route::get('/', function () {
@@ -19,16 +22,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Routes pour les administrateurs
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        $salons = \App\Models\Salon::with('messages.user')->get();
+        return view('admin.dashboard', compact('salons'));
     })->name('admin.dashboard');
-    
-    // Ajoutez ici d'autres routes admin si nécessaire
-    // Par exemple :
-    // Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::post('/salons', [SalonController::class, 'store'])->name('salons.store');
 });
+
+
+Route::post('/messages', [MessageController::class, 'store']);
+
+// Routes pour les catégories
+Route::resource('categories', CategoryController::class)->middleware('auth');
+
+// Routes pour les salons
+Route::resource('salons', SalonController::class)->middleware('auth');
 
 // Routes d'authentification (login, register, etc.)
 require __DIR__.'/auth.php';
