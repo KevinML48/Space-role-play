@@ -65,26 +65,30 @@
                     </div>
 
                     <!-- Section Messages des Salons -->
+<!-- Section d'envoi de message -->
 <div class="mt-6 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-    <h4 class="font-bold mb-2">{{ __("Salon Messages") }}</h4>
+    <h4 class="font-bold mb-2">{{ __("Send a Message") }}</h4>
 
-    @foreach($salons as $salon)
-        <div class="mb-4 p-4 bg-gray-200 dark:bg-gray-800 rounded">
-            <h5 class="font-bold">{{ $salon->name }}</h5>
+    <form method="POST" action="{{ route('messages.store') }}">
+        @csrf
+        <!-- Sélection du salon -->
+        <select name="salon_id" required class="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white">
+            <option value="" disabled selected>{{ __("Choose a salon") }}</option>
+            @foreach($salons as $salon)
+                <option value="{{ $salon->id }}">{{ $salon->name }}</option>
+            @endforeach
+        </select>
 
-            @if($salon->messages->count())
-                @foreach($salon->messages as $message)
-                    <div class="p-2 border-b border-gray-600">
-                        <strong>{{ $message->user->name }}:</strong> {{ $message->content }}
-                        <small class="block text-gray-500">{{ $message->created_at->diffForHumans() }}</small>
-                    </div>
-                @endforeach
-            @else
-                <p class="text-gray-500">{{ __("No messages yet.") }}</p>
-            @endif
-        </div>
-    @endforeach
+        <!-- Zone de texte pour le message -->
+        <textarea name="content" required placeholder="Type your message here..." 
+                  class="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white w-full mt-2"></textarea>
+
+        <button type="submit" class="bg-green-500 px-4 py-2 rounded mt-2">
+            {{ __("Send Message") }}
+        </button>
+    </form>
 </div>
+
 
                 </div>
             </div>

@@ -34,6 +34,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
 
 Route::post('/messages', [MessageController::class, 'store']);
+Route::post('/messages', [MessageController::class, 'store'])->name('messages.store')->middleware('auth');
 
 // Routes pour les catégories
 Route::resource('categories', CategoryController::class)->middleware('auth');

@@ -14,18 +14,19 @@ class MessageController extends Controller
         return view('messages.index', compact('messages', 'salon'));
     }
 
-    public function store(Request $request, Salon $salon)
+    public function store(Request $request)
     {
         $request->validate([
-            'content' => 'required|string',
+            'salon_id' => 'required|exists:salons,id',
+            'content' => 'required|string|max:1000',
         ]);
-
-        Message::create([
+    
+        \App\Models\Message::create([
             'user_id' => auth()->id(),
-            'salon_id' => $salon->id,
+            'salon_id' => $request->salon_id,
             'content' => $request->content,
         ]);
-
-        return redirect()->route('messages.index', $salon)->with('success', 'Message sent!');
+    
+        return back()->with('success', 'Message sent successfully!');
     }
 }
