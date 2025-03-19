@@ -18,15 +18,15 @@ class MessageController extends Controller
     {
         $request->validate([
             'salon_id' => 'required|exists:salons,id',
-            'content' => 'required|string|max:1000',
+            'content' => 'required|string|max:255',
         ]);
     
-        \App\Models\Message::create([
-            'user_id' => auth()->id(),
+        Message::create([
             'salon_id' => $request->salon_id,
+            'user_id' => auth()->id(),
             'content' => $request->content,
         ]);
     
-        return back()->with('success', 'Message sent successfully!');
-    }
+        return redirect()->route('salons.show', $request->salon_id);
+    }    
 }

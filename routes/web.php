@@ -42,6 +42,11 @@ Route::resource('categories', CategoryController::class)->middleware('auth');
 // Routes pour les salons
 Route::resource('salons', SalonController::class)->middleware('auth');
 
+Route::get('/salons', [SalonController::class, 'index'])->name('salons.index');
+Route::get('/salons/{id}', [SalonController::class, 'show'])->name('salons.show');
+Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+
+
 // Routes d'authentification (login, register, etc.)
 require __DIR__.'/auth.php';
 
