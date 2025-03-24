@@ -6,15 +6,24 @@
     </x-slot>
 
     <div class="flex h-screen">
-        <!-- Liste des salons (Sidebar) -->
+        <!-- Liste des catégories et salons -->
         <div class="w-1/4 bg-gray-900 text-white p-4">
-            <h3 class="text-lg font-bold mb-4">Salons</h3>
+            <h3 class="text-lg font-bold mb-4">Catégories</h3>
             <ul>
-                @foreach($salons as $salon)
-                    <li class="mb-2">
-                        <a href="{{ route('salons.show', $salon->id) }}" class="block p-2 bg-gray-800 rounded hover:bg-gray-700">
-                            {{ $salon->name }}
-                        </a>
+                @foreach($categories as $category)
+                    <li class="mb-4">
+                        <button class="block w-full p-2 bg-gray-800 rounded hover:bg-gray-700" onclick="toggleCategory({{ $category->id }})">
+                            {{ $category->name }}
+                        </button>
+                        <ul id="category-{{ $category->id }}" class="hidden ml-4">
+                            @foreach($category->salons as $salon)
+                                <li class="mb-2">
+                                    <a href="{{ route('salons.show', $salon->id) }}" class="block p-2 bg-gray-800 rounded hover:bg-gray-700">
+                                        {{ $salon->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
                     </li>
                 @endforeach
             </ul>
@@ -52,4 +61,11 @@
             @endif
         </div>
     </div>
+
+    <script>
+        function toggleCategory(categoryId) {
+            var categoryElement = document.getElementById('category-' + categoryId);
+            categoryElement.classList.toggle('hidden');
+        }
+    </script>
 </x-app-layout>
