@@ -11,11 +11,13 @@ class Channel extends Model
 
     protected $fillable = ['name', 'category_id'];
 
+    // Relation inverse avec Category
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
+    // Relation avec Message
     public function messages()
     {
         return $this->hasMany(Message::class);

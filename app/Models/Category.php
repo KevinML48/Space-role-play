@@ -11,8 +11,9 @@ class Category extends Model
 
     protected $fillable = ['name'];
 
-    public function salons()
+    // Relation avec Channel (corrigée)
+    public function channels()
     {
-        return $this->hasMany(Salon::class);
+        return $this->hasMany(Channel::class);
     }
 }
