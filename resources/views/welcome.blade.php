@@ -25,16 +25,9 @@
             <nav class="flex items-center justify-end gap-4">
                 @auth
                     <!-- Si l'utilisateur est connecté, afficher un lien vers les salons -->
-                    <a href="{{ route('salons.index') }}" class="bg-green-500 text-white px-3 py-1 rounded">
-                        Accéder aux Salons
+                    <a href="{{ route('servers.index') }}" class="bg-green-500 text-white px-3 py-1 rounded">
+                        Accéder aux Servers
                     </a>
-
-                    @role('admin') <!-- Vérifie si l'utilisateur est un admin -->
-                        <!-- Bouton pour l'interface de gestion des salons -->
-                        <a href="{{ route('admin.dashboard') }}" class="bg-blue-500 text-white px-3 py-1 rounded">
-                            Admin Dashboard
-                        </a>
-                    @endrole
                 @else
                     <!-- Si l'utilisateur n'est pas connecté, afficher les liens de login et register -->
                     <a href="{{ route('login') }}" class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">

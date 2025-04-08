@@ -148,21 +148,23 @@
 
         <!-- Création de catégorie (version desktop) -->
         @role('admin')
-        <div class="mt-8 p-6 bg-gray-900 rounded-xl hidden md:block">
-            <h2 class="text-lg font-semibold mb-4">Créer une catégorie</h2>
-            <form action="{{ route('categories.store', $server) }}" method="POST" class="flex gap-4">
-                @csrf
-                <input type="text" 
-                       name="name" 
-                       placeholder="Nom de la catégorie" 
-                       class="bg-gray-800 p-2 rounded-lg flex-grow">
-                <button type="submit" 
-                        class="bg-blue-600 px-6 rounded-lg hover:bg-blue-500 transition-colors">
-                    Créer
-                </button>
-            </form>
+<div class="px-4">
+    <form action="{{ route('categories.store', $server) }}" method="POST">
+        @csrf
+        <input type="hidden" name="server_id" value="{{ $server->id }}">  <!-- Ajout crucial -->
+        <div class="flex gap-2">
+            <input type="text"
+                   name="name"
+                   placeholder="Nouvelle catégorie"
+                   class="bg-gray-800 text-sm p-2 rounded-lg flex-grow">
+            <button type="submit"
+                    class="bg-blue-600 px-3 rounded-lg hover:bg-blue-500 transition-colors">
+                <i class="fas fa-plus"></i>
+            </button>
         </div>
-        @endrole
+    </form>
+</div>
+@endrole
     </main>
 
     <!-- Scripts -->

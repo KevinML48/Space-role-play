@@ -25,17 +25,16 @@ class SalonController extends Controller
     }  
 
     public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'category_id' => 'required|exists:categories,id',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id'
+        ]);
+    
+        $category = Category::findOrFail($request->category_id);
+        $category->salons()->create(['name' => $request->name]);
+    
+        return redirect()->route('salons.index')->with('success', 'Salon créé avec succès !');
+    }      
 
-    Salon::create([
-        'name' => $request->name,
-        'category_id' => $request->category_id,
-    ]);
-
-    return redirect()->route('salons.index')->with('success', 'Salon créé avec succès !');
-}
 }
