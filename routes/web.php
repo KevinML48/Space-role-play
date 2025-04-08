@@ -6,6 +6,9 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SalonController;
+use App\Http\Controllers\MessageController;
 
 // Routes publiques
 Route::get('/', function () {

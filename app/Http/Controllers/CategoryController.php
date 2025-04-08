@@ -2,29 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Server;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller as BaseController;
+use App\Models\Category;
 
-class CategoryController extends BaseController
+class CategoryController extends Controller
 {
-    public function __construct()
+    public function index()
     {
-        $this->middleware('auth');
-        $this->middleware('role:admin')->only(['store']);
+        $categories = Category::all();
+        return view('categories.index', compact('categories'));
     }
 
-    public function store(Request $request, Server $server)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
-        $category = $server->categories()->create([
-            'name' => $request->name,
-        ]);
+        Category::create(['name' => $request->name]);
 
-        return redirect()->route('servers.show', $server)->with('success', 'Catégorie créée avec succès.');
+        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }
 }

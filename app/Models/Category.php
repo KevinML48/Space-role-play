@@ -9,15 +9,10 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'server_id'];
+    protected $fillable = ['name'];
 
-    public function server()
+    public function salons()
     {
-        return $this->belongsTo(Server::class);
-    }
-
-    public function channels()
-    {
-        return $this->hasMany(Channel::class);
+        return $this->hasMany(Salon::class);
     }
 }

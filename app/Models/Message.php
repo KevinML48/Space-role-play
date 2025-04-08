@@ -9,11 +9,11 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'channel_id', 'content'];
+    protected $fillable = ['salon_id', 'user_id', 'content'];
 
-    public function channel()
+    public function salon()
     {
-        return $this->belongsTo(Channel::class);
+        return $this->belongsTo(Salon::class);
     }
 
     public function user()
@@ -21,3 +21,4 @@ class Message extends Model
         return $this->belongsTo(User::class);
     }
 }
+
