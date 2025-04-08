@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,6 +14,14 @@ class DatabaseSeeder extends Seeder
         // Créer les rôles
         $adminRole = Role::create(['name' => 'admin']);
         $userRole = Role::create(['name' => 'user']);
+
+        // Créer les permissions
+        $createServerPermission = Permission::create(['name' => 'create server']);
+        $manageServerPermission = Permission::create(['name' => 'manage server']);
+
+        // Attribuer les permissions aux rôles
+        $adminRole->givePermissionTo([$createServerPermission, $manageServerPermission]);
+        $userRole->givePermissionTo($createServerPermission);
 
         // Créer un utilisateur admin
         $admin = User::factory()->create([
@@ -27,8 +36,5 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
         $user->assignRole($userRole);
-
-        // Vous pouvez supprimer cette ligne si vous n'avez plus besoin du seeder séparé
-        // $this->call([RolesAndPermissionsSeeder::class]);
     }
 }

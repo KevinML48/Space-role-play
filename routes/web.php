@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServerController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 
-// Route publique
+// Routes publiques
 Route::get('/', function () {
     return view('welcome');
 });
@@ -20,20 +24,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Routes pour les administrateurs
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
     
-    // Ajoutez ici d'autres routes admin si nécessaire
-    // Par exemple :
-    // Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/servers/create', [ServerController::class, 'create'])->name('servers.create');
+    Route::post('/servers', [ServerController::class, 'store'])->name('servers.store');
+    Route::post('/servers/{server}/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::post('/categories/{category}/channels', [ChannelController::class, 'store'])->name('channels.store');
 });
 
-// Routes d'authentification (login, register, etc.)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/servers', [ServerController::class, 'index'])->name('servers.index');
+    Route::get('/servers/{server}', [ServerController::class, 'show'])->name('servers.show');
+    Route::post('/servers/join', [ServerController::class, 'join'])->name('servers.join');
+    Route::get('/channels/{channel}', [ChannelController::class, 'show'])->name('channels.show');
+    Route::post('/channels/{channel}/messages', [MessageController::class, 'store'])->name('messages.store');
+});
+
+
+// Routes d'authentification
 require __DIR__.'/auth.php';
 
-// Route de fallback (optionnelle)
+// Route de fallback
 Route::fallback(function () {
     return redirect('/dashboard');
+});
+
+Route::get('/test-auth', function () {
+    $user = auth()->user();
+    $roles = $user->roles->pluck('name');
+    $isAdmin = $user->hasRole('admin');
+    
+    dd([
+        'user' => $user,
+        'roles' => $roles,
+        'isAdmin' => $isAdmin
+    ]);
 });
