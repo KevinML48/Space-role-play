@@ -5,50 +5,54 @@ namespace App\Http\Controllers;
 use App\Models\Server;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
-class ServerController extends BaseController
+class ServerController extends Controller
 {
     public function index()
     {
-        $userServers = auth()->user()->servers;
-        $allServers = Server::whereNotIn('id', $userServers->pluck('id'))->get();
+        $user = auth()->user();
+        $userServers = $user->servers;
+        
+        // Serveurs non rejoints
+        $allServers = Server::whereDoesntHave('users', function($query) use ($user) {
+            $query->where('users.id', $user->id);
+        })->get();
+
         return view('servers.index', compact('userServers', 'allServers'));
     }
 
     public function create()
     {
-        \Log::info('Create method reached');
         return view('servers.create');
-    }    
+    }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|max:255|unique:servers',
-            'image' => 'nullable|image|max:2048', // max 2Mo
+            'password' => 'nullable|string|min:6',
+            'image' => 'nullable|image|max:2048',
             'short_description' => 'nullable|string|max:255',
         ]);
-    
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('servers', 'public');
-        }
-    
+
         $server = Server::create([
             'name' => $request->name,
-            'code' => $request->code ?? Str::random(8),
-            'image' => $imagePath,
+            'code' => $request->code,
+            'password' => $request->password ? bcrypt($request->password) : null,
+            'image' => $request->hasFile('image') 
+                ? $request->file('image')->store('servers', 'public')
+                : null,
             'short_description' => $request->short_description,
         ]);
-    
+
         auth()->user()->servers()->attach($server);
-    
-        return redirect()->route('servers.show', $server)->with('success', 'Serveur créé avec succès.');
+
+        return redirect()->route('servers.show', $server);
     }
-    
 
     public function show(Server $server)
     {
@@ -58,66 +62,76 @@ class ServerController extends BaseController
 
     public function join(Request $request)
     {
-        $request->validate([
-            'server_id' => 'required|exists:servers,id',
-            'code' => 'required|string',
-        ]);
-
         $server = Server::findOrFail($request->server_id);
 
-        if ($server->code !== $request->code) {
+        $request->validate([
+            'server_id' => 'required|exists:servers,id',
+            'code' => [
+                'nullable',
+                'string',
+                Rule::requiredIf(fn () => $server->code !== null)
+            ],
+            'password' => [
+                'nullable',
+                'string',
+                Rule::requiredIf(fn () => $server->password !== null)
+            ],
+        ]);
+
+        // Vérification code
+        if ($server->code && $server->code !== $request->code) {
             return back()->with('error', 'Code incorrect');
         }
 
-        auth()->user()->servers()->attach($server);
+        // Vérification mot de passe
+        if ($server->password && !Hash::check($request->password, $server->password)) {
+            return back()->with('error', 'Mot de passe incorrect');
+        }
 
-        return redirect()->route('servers.show', $server)->with('success', 'Vous avez rejoint le serveur.');
+        auth()->user()->servers()->attach($server);
+        return redirect()->route('servers.show', $server);
     }
 
     public function edit(Server $server)
-{
-    return view('servers.edit', compact('server'));
-}
+    {
+        return view('servers.edit', compact('server'));
+    }
 
-public function update(Request $request, Server $server)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'code' => 'nullable|string|max:255|unique:servers,code,'.$server->id,
-        'image' => 'nullable|image|max:2048', // max 2Mo
-        'short_description' => 'nullable|string|max:255',
-    ]);
+    public function update(Request $request, Server $server)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'nullable|string|max:255|unique:servers,code,'.$server->id,
+            'password' => 'nullable|string|min:6',
+            'image' => 'nullable|image|max:2048',
+            'short_description' => 'nullable|string|max:255',
+        ]);
 
-    $data = [
-        'name' => $request->name,
-        'code' => $request->code,
-        'short_description' => $request->short_description,
-    ];
+        $data = $request->only(['name', 'code', 'short_description']);
+        
+        if ($request->password) {
+            $data['password'] = bcrypt($request->password);
+        }
 
-    if ($request->hasFile('image')) {
-        // Supprimer l'ancienne image si elle existe
+        if ($request->hasFile('image')) {
+            if ($server->image) {
+                Storage::disk('public')->delete($server->image);
+            }
+            $data['image'] = $request->file('image')->store('servers', 'public');
+        }
+
+        $server->update($data);
+
+        return redirect()->route('servers.show', $server);
+    }
+
+    public function destroy(Server $server)
+    {
         if ($server->image) {
             Storage::disk('public')->delete($server->image);
         }
-        $data['image'] = $request->file('image')->store('servers', 'public');
+        
+        $server->delete();
+        return redirect()->route('servers.index');
     }
-
-    $server->update($data);
-
-    return redirect()->route('servers.show', $server)->with('success', 'Serveur mis à jour avec succès.');
-}
-
-public function destroy(Server $server)
-{
-    // Supprimer l'image associée si elle existe
-    if ($server->image) {
-        Storage::disk('public')->delete($server->image);
-    }
-
-    // Supprimer le serveur
-    $server->delete();
-
-    return redirect()->route('servers.index')->with('success', 'Serveur supprimé avec succès.');
-}
-
 }
