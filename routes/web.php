@@ -35,17 +35,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
-    
+
     // Gestion serveurs
     Route::get('/servers/create', [ServerController::class, 'create'])->name('servers.create');
     Route::post('/servers', [ServerController::class, 'store'])->name('servers.store');
-    
+
+    // Ajout des routes pour l'édition
+    Route::get('/servers/{server}/edit', [ServerController::class, 'edit'])->name('servers.edit');
+    Route::put('/servers/{server}', [ServerController::class, 'update'])->name('servers.update');
+
     // Gestion catégories
     Route::post('/servers/{server}/categories', [CategoryController::class, 'store'])->name('categories.store');
-    
+
     // Gestion channels (si maintenu)
     Route::post('/categories/{category}/channels', [ChannelController::class, 'store'])->name('channels.store');
 });
+
 
 // Routes authentifiées générales
 Route::middleware(['auth'])->group(function () {

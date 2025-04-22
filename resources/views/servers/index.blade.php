@@ -91,23 +91,33 @@
             </h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                @foreach ($userServers as $server)
-                    <div class="bg-gray-900 p-4 rounded-xl hover:bg-gray-800 transition-colors">
-                        <h3 class="text-md md:text-lg font-semibold">{{ $server->name }}</h3>
-                        <p class="text-xs md:text-sm text-gray-400 mb-4">{{ $server->short_description }}</p>
-                        
-                        <div class="flex gap-2">
-                            <a href="{{ route('servers.show', $server) }}" 
-                               class="flex-1 bg-blue-600 text-center py-2 rounded-lg hover:bg-blue-500 transition-colors text-sm md:text-base">
-                                Accéder
-                            </a>
-                            <button class="w-10 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
+    @foreach ($userServers as $server)
+        <div class="bg-gray-900 p-4 rounded-xl hover:bg-gray-800 transition-colors">
+            <div class="flex items-center gap-2 mb-2">
+                @if($server->image)
+                    <img src="{{ asset('storage/' . $server->image) }}" alt="Logo du serveur" class="w-8 h-8 rounded-lg object-cover">
+                @else
+                    <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                        {{ substr($server->name, 0, 1) }}
                     </div>
-                @endforeach
+                @endif
+                <h3 class="text-md md:text-lg font-semibold">{{ $server->name }}</h3>
             </div>
+            <p class="text-xs md:text-sm text-gray-400 mb-4">{{ $server->short_description }}</p>
+            
+            <div class="flex gap-2">
+                <a href="{{ route('servers.show', $server) }}" 
+                   class="flex-1 bg-blue-600 text-center py-2 rounded-lg hover:bg-blue-500 transition-colors text-sm md:text-base">
+                    Accéder
+                </a>
+                <button class="w-10 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+            </div>
+        </div>
+    @endforeach
+</div>
+
         </section>
 
         <!-- Section Serveurs publics -->

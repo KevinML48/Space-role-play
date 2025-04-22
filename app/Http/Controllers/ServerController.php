@@ -6,6 +6,7 @@ use App\Models\Server;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Storage;
 
 class ServerController extends BaseController
 {
@@ -27,17 +28,24 @@ class ServerController extends BaseController
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|max:255|unique:servers',
+            'image' => 'nullable|image|max:2048', // max 2Mo
         ]);
-
+    
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('servers', 'public');
+        }
+    
         $server = Server::create([
             'name' => $request->name,
             'code' => $request->code ?? Str::random(8),
+            'image' => $imagePath,
         ]);
-
+    
         auth()->user()->servers()->attach($server);
-
+    
         return redirect()->route('servers.show', $server)->with('success', 'Serveur créé avec succès.');
-    }
+    }    
 
     public function show(Server $server)
     {
@@ -62,4 +70,36 @@ class ServerController extends BaseController
 
         return redirect()->route('servers.show', $server)->with('success', 'Vous avez rejoint le serveur.');
     }
+
+    public function edit(Server $server)
+{
+    return view('servers.edit', compact('server'));
+}
+
+public function update(Request $request, Server $server)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'code' => 'nullable|string|max:255|unique:servers,code,'.$server->id,
+        'image' => 'nullable|image|max:2048', // max 2Mo
+    ]);
+
+    $data = [
+        'name' => $request->name,
+        'code' => $request->code,
+    ];
+
+    if ($request->hasFile('image')) {
+        // Supprimer l'ancienne image si elle existe
+        if ($server->image) {
+            Storage::disk('public')->delete($server->image);
+        }
+        $data['image'] = $request->file('image')->store('servers', 'public');
+    }
+
+    $server->update($data);
+
+    return redirect()->route('servers.show', $server)->with('success', 'Serveur mis à jour avec succès.');
+}
+
 }

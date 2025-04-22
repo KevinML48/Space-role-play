@@ -27,15 +27,27 @@
     <!-- Barre latérale -->
     <nav class="mobile-hidden fixed left-0 top-0 h-screen w-64 bg-gray-900 flex flex-col py-4 space-y-4 z-40">
         <!-- Header du serveur -->
-        <div class="px-4">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
-                    {{ substr($server->name, 0, 1) }}
-                </div>
-                {{ $server->name }}
-            </h1>
-            <p class="text-sm text-gray-400 mt-2">Code d'invitation : {{ $server->code }}</p>
-        </div>
+        <!-- Header du serveur -->
+<div class="px-4">
+    <div class="flex items-center gap-2">
+        @if($server->image)
+            <img src="{{ asset('storage/' . $server->image) }}" alt="Logo du serveur" class="w-8 h-8 rounded-lg object-cover">
+        @else
+            <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                {{ substr($server->name, 0, 1) }}
+            </div>
+        @endif
+        <h1 class="text-xl font-bold">{{ $server->name }}</h1>
+    </div>
+    <p class="text-sm text-gray-400 mt-2">Code d'invitation : {{ $server->code }}</p>
+
+    @role('admin')
+    <a href="{{ route('servers.edit', $server) }}" class="mt-2 block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <i class="fas fa-edit"></i> Modifier
+    </a>
+    @endrole
+</div>
+
 
         <!-- Navigation -->
         <div class="flex-1 overflow-y-auto px-4">
@@ -97,11 +109,21 @@
     <main class="ml-0 md:ml-64 p-4 md:p-6 transition-all duration-300">
         <!-- Header -->
         <header class="bg-gray-900 p-4 md:p-6 rounded-xl mb-6">
+    <div class="flex items-center justify-between">
+        <div>
             <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
                 <i class="fas fa-hashtag"></i>
                 {{ $server->name }}
             </h1>
-        </header>
+        </div>
+        @role('admin')
+        <a href="{{ route('servers.edit', $server) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <i class="fas fa-edit"></i> Modifier
+        </a>
+        @endrole
+    </div>
+</header>
+
 
         <!-- Section des catégories -->
         <section class="space-y-6">
