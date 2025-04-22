@@ -39,16 +39,22 @@
             </a>
 
             @foreach ($userServers as $server)
-                <a href="{{ route('servers.show', $server) }}" 
-                   class="block mb-2 p-2 rounded-lg hover:bg-gray-800 transition-colors">
-                   <div class="flex items-center gap-3">
-                       <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
-                           {{ substr($server->name, 0, 1) }}
-                       </div>
-                       <span class="text-gray-300">{{ $server->name }}</span>
-                   </div>
-                </a>
-            @endforeach
+    <a href="{{ route('servers.show', $server) }}" 
+       class="block mb-2 p-2 rounded-lg hover:bg-gray-800 transition-colors">
+       <div class="flex items-center gap-3">
+           @if($server->image)
+               <img src="{{ asset('storage/' . $server->image) }}" 
+                    alt="Logo {{ $server->name }}" 
+                    class="w-8 h-8 rounded-lg object-cover">
+           @else
+               <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                   {{ substr($server->name, 0, 1) }}
+               </div>
+           @endif
+           <span class="text-gray-300">{{ $server->name }}</span>
+       </div>
+    </a>
+@endforeach
         </div>
         
         @role('admin')
@@ -110,13 +116,20 @@
                    class="flex-1 bg-blue-600 text-center py-2 rounded-lg hover:bg-blue-500 transition-colors text-sm md:text-base">
                     Accéder
                 </a>
-                <button class="w-10 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i class="fas fa-ellipsis-h"></i>
-                </button>
+                @role('admin')
+                <form action="{{ route('servers.destroy', $server) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-10 bg-red-600 rounded-lg hover:bg-red-500 transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+                @endrole
             </div>
         </div>
     @endforeach
 </div>
+
 
         </section>
 

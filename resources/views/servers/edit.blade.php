@@ -17,6 +17,7 @@
             <label for="code" class="block mb-2">Code d'invitation (optionnel)</label>
             <input type="text" name="code" id="code" class="border p-2 w-full" value="{{ $server->code }}">
         </div>
+            <textarea name="short_description" id="short_description" class="border p-2 w-full">{{ $server->short_description }}</textarea>
          <div class="mb-4">
             <label for="image" class="block mb-2">Logo du serveur (optionnel)</label>
             <input type="file" name="image" id="image" class="border p-2 w-full" accept="image/*">

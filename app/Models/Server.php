@@ -9,7 +9,7 @@ class Server extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'code', 'image'];
+    protected $fillable = ['name', 'code', 'image', 'short_description'];
 
     public function categories()
     {

@@ -29,6 +29,7 @@ class ServerController extends BaseController
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|max:255|unique:servers',
             'image' => 'nullable|image|max:2048', // max 2Mo
+            'short_description' => 'nullable|string|max:255',
         ]);
     
         $imagePath = null;
@@ -40,12 +41,14 @@ class ServerController extends BaseController
             'name' => $request->name,
             'code' => $request->code ?? Str::random(8),
             'image' => $imagePath,
+            'short_description' => $request->short_description,
         ]);
     
         auth()->user()->servers()->attach($server);
     
         return redirect()->route('servers.show', $server)->with('success', 'Serveur créé avec succès.');
-    }    
+    }
+    
 
     public function show(Server $server)
     {
@@ -82,11 +85,13 @@ public function update(Request $request, Server $server)
         'name' => 'required|string|max:255',
         'code' => 'nullable|string|max:255|unique:servers,code,'.$server->id,
         'image' => 'nullable|image|max:2048', // max 2Mo
+        'short_description' => 'nullable|string|max:255',
     ]);
 
     $data = [
         'name' => $request->name,
         'code' => $request->code,
+        'short_description' => $request->short_description,
     ];
 
     if ($request->hasFile('image')) {
@@ -100,6 +105,19 @@ public function update(Request $request, Server $server)
     $server->update($data);
 
     return redirect()->route('servers.show', $server)->with('success', 'Serveur mis à jour avec succès.');
+}
+
+public function destroy(Server $server)
+{
+    // Supprimer l'image associée si elle existe
+    if ($server->image) {
+        Storage::disk('public')->delete($server->image);
+    }
+
+    // Supprimer le serveur
+    $server->delete();
+
+    return redirect()->route('servers.index')->with('success', 'Serveur supprimé avec succès.');
 }
 
 }

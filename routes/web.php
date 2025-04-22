@@ -39,10 +39,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Gestion serveurs
     Route::get('/servers/create', [ServerController::class, 'create'])->name('servers.create');
     Route::post('/servers', [ServerController::class, 'store'])->name('servers.store');
-
-    // Ajout des routes pour l'édition
     Route::get('/servers/{server}/edit', [ServerController::class, 'edit'])->name('servers.edit');
     Route::put('/servers/{server}', [ServerController::class, 'update'])->name('servers.update');
+
+    // Ajoute cette ligne si elle n'y est pas
+    Route::delete('/servers/{server}', [ServerController::class, 'destroy'])->name('servers.destroy');
 
     // Gestion catégories
     Route::post('/servers/{server}/categories', [CategoryController::class, 'store'])->name('categories.store');
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Gestion channels (si maintenu)
     Route::post('/categories/{category}/channels', [ChannelController::class, 'store'])->name('channels.store');
 });
+
 
 
 // Routes authentifiées générales

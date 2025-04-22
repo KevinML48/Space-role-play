@@ -14,6 +14,10 @@
             <input type="text" name="code" id="code" class="border p-2 w-full">
         </div>
         <div class="mb-4">
+    <label for="short_description" class="block mb-2">Description courte (optionnelle)</label>
+    <textarea name="short_description" id="short_description" class="border p-2 w-full"></textarea>
+</div>
+        <div class="mb-4">
             <label for="image" class="block mb-2">Logo du serveur (optionnel)</label>
             <input type="file" name="image" id="image" class="border p-2 w-full" accept="image/*">
         </div>

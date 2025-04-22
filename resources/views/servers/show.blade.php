@@ -41,11 +41,9 @@
     </div>
     <p class="text-sm text-gray-400 mt-2">Code d'invitation : {{ $server->code }}</p>
 
-    @role('admin')
-    <a href="{{ route('servers.edit', $server) }}" class="mt-2 block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        <i class="fas fa-edit"></i> Modifier
-    </a>
-    @endrole
+    <p class="text-sm text-gray-400 mt-2">
+    {{ $server->users()->count() }} membres
+</p>
 </div>
 
 
@@ -115,6 +113,7 @@
                 <i class="fas fa-hashtag"></i>
                 {{ $server->name }}
             </h1>
+            <p class="text-sm text-gray-400">{{ $server->short_description }}</p>
         </div>
         @role('admin')
         <a href="{{ route('servers.edit', $server) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
